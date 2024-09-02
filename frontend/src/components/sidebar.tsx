@@ -25,7 +25,7 @@ const Sidebar = () => {
             <Client username={client.name} key={index} />
           ))}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pb-4">
           <Button className="flex gap-2">
             <Copy /> <span>Copy RoomId</span>
             </Button>
