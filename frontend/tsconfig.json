@@ -5,6 +5,7 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "types": ["node", "@types/uuid", "other-types"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

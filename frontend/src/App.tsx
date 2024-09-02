@@ -1,14 +1,15 @@
-import { Outlet } from 'react-router-dom'
-import './App.css'
-import { ThemeProvider } from './components/theme-provider'
+import { Outlet } from "react-router-dom";
+import "./App.css";
+import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "sonner";
 
 function App() {
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <Outlet />
-  </ThemeProvider>
-  )
+      <Outlet />
+      <Toaster richColors />
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
