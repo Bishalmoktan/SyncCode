@@ -1,14 +1,13 @@
+import { IClient } from '@/types';
 import Avatar from 'react-avatar';
 
-interface ClientProps {
-    username: string;
-}
 
-const Client = ({ username } : ClientProps) => {
+
+const Client = ({ name } : IClient) => {
     return (
         <div className="flex flex-col gap-1 items-center">
-            <Avatar name={username} size={'50'} round="14px" />
-            <span className="text-sm">{username}</span>
+            <Avatar name={name} size={'50'} round="14px" />
+            <span className="text-sm">{name}</span>
         </div>
     );
 };
