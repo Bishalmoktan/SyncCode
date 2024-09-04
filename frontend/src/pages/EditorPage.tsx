@@ -4,13 +4,20 @@ import Sidebar from "@/components/sidebar";
 import { initSocket } from "@/lib/socket";
 import { IClient } from "@/types";
 import { useEffect, useRef, useState } from "react";
-import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { Socket } from "socket.io-client";
 import { toast } from "sonner";
 
 const EditorPage = () => {
   const [clients, setClients] = useState<IClient[]>([]);
-  const socketRef = useRef<Socket>();
+  const socketRef = useRef<Socket | null>(null);
+  const codeRef = useRef<string>("");
+  const languageRef = useRef<string>("");
   const reactNavigator = useNavigate();
   const location = useLocation();
   const { roomId } = useParams();
@@ -23,20 +30,33 @@ const EditorPage = () => {
         socketRef.current.emit(ACTIONS.JOIN, {
           roomId,
           name: location.state?.name,
-      });
+        });
 
-       // Listening for joined event
-       socketRef.current.on(ACTIONS.JOINED, ({clients, name, socketId}) => {
-        if(location.state.name !== name){
-          toast.success(`${name} joined the room`, {
+        // Listening for joined event
+        socketRef.current.on(ACTIONS.JOINED, ({ clients, name, socketId }) => {
+          if (location.state.name !== name) {
+            toast.success(`${name} joined the room`, {
+              duration: 1500,
+              position: "top-right",
+            });
+          }
+          setClients(clients);
+          socketRef.current?.emit(ACTIONS.SYNC_CODE, { code: codeRef.current, socketId })
+          socketRef.current?.emit(ACTIONS.SYNC_LANGUAGE, { language: languageRef.current, socketId })
+        });
+
+        // Listening for disconnect event
+        socketRef.current.on(ACTIONS.DISCONNECTED, ({ name, socketId }) => {
+          toast.info(`${name} has left the room`, {
             duration: 1500,
-            position: 'top-right'
+            position: "top-right",
           });
-        }
-        setClients(clients);
-      })
 
-    } catch (error) {
+          setClients((prev) =>
+            prev.filter((item) => item.socketId !== socketId)
+          );
+        });
+      } catch (error) {
         console.error("Socket connection failed:", error);
         toast.error("Socket connection failed, try again later.");
         reactNavigator("/");
@@ -47,20 +67,29 @@ const EditorPage = () => {
 
     return () => {
       if (socketRef.current) {
+        socketRef.current.off(ACTIONS.JOINED);
+        socketRef.current.off(ACTIONS.DISCONNECTED);
         socketRef.current.disconnect();
-        console.log("Socket disconnected");
       }
     };
   }, []);
 
-
-  if(!location.state){
-    return <Navigate to={"/"} />
+  if (!location.state) {
+    return <Navigate to={"/"} />;
   }
   return (
     <div className="grid grid-cols-[250px_1fr]">
-      <Sidebar clients={clients} />
-      <Editor />
+      <Sidebar clients={clients} roomId={roomId!} />
+      <Editor
+        socketRef={socketRef}
+        roomId={roomId!}
+        onCodeChange={(code: string) => {
+          codeRef.current = code;
+        }}
+        onLanguageChange={(language: string) => {
+          languageRef.current = language
+        }}
+      />
     </div>
   );
 };
