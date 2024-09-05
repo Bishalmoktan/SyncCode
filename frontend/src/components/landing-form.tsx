@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {  useState } from "react";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import Logo from "./logo"
@@ -20,7 +20,7 @@ const LandingForm = () => {
   const [name, setName] = useState<string>("");
 
   const createroomId = () => {
-    const id: string = uuid();
+    const id: string = uuidv4();
     setRoomId(id);
     toast.success("Room Id generated!", {
       duration: 1500,
