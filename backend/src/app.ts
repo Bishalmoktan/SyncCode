@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io: Server = new Server(server);
 
 interface UserSocketMap {
-    [socketId: string]: string;
-  }
+  [socketId: string]: string;
+}
 
 const userSocketMap: UserSocketMap = {};
 function getAllConnectedClients(roomId: string) {
@@ -25,7 +25,6 @@ function getAllConnectedClients(roomId: string) {
 }
 
 io.on("connection", (socket) => {
-  console.log("User connected: ", socket.id);
 
   socket.on(ACTIONS.JOIN, ({ roomId, name }) => {
     userSocketMap[socket.id] = name;
@@ -40,8 +39,33 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
+  socket.on(ACTIONS.CODE_CHANGE, ({ code, roomId }) => {
+    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
+  });
+
+  socket.on(ACTIONS.LANGUAGE_CHANGE, ({ language, roomId }) => {
+    socket.in(roomId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+  });
+
+  socket.on(ACTIONS.SYNC_CODE, ({ code, socketId }) => {
+    if (code.length > 0) {
+      io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
+    }
+  });
+
+  socket.on(ACTIONS.SYNC_LANGUAGE, ({ language, socketId }) => {
+    io.to(socketId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+  });
+
+  socket.on("disconnecting", () => {
+    const rooms = [...socket.rooms];
+    rooms.forEach((roomId) => {
+      socket.to(roomId).emit(ACTIONS.DISCONNECTED, {
+        socketId: socket.id,
+        name: userSocketMap[socket.id],
+      });
+    });
+    delete userSocketMap[socket.id];
   });
 });
 
