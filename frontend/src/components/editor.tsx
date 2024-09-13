@@ -68,6 +68,8 @@ const EditorComponent = ({
         );
         if (selectedLanguage) {
           setLanguage(language);
+          onLanguageChange(language);
+          setCode(LANGUAGE_MAPPING[selectedLanguage].boilerplate);
           if (socketRef.current) {
             socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
               setCode(code);
