@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
 
-  socket.on(ACTIONS.LANGUAGE_CHANGE, ({ language, roomId }) => {
+  socket.on(ACTIONS.LANGUAGE_CHANGE, ({ language, roomId }) => { 
     socket.in(roomId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
   });
 
