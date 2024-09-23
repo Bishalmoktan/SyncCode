@@ -12,6 +12,12 @@ interface UserSocketMap {
   [socketId: string]: string;
 }
 
+app.get("/check-health", (req, res) => {
+  res.status(200).json({
+    message: "Server is running"
+  })
+})
+
 const userSocketMap: UserSocketMap = {};
 function getAllConnectedClients(roomId: string) {
   return Array.from(io.sockets.adapter.rooms.get(roomId) || []).map(
