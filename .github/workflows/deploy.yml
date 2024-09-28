@@ -28,6 +28,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ${{ secrets.DEPLOY_PATH }}/backend 
+          pwd
           git pull origin main                   
           npm ci                                 
           npm run build                          
