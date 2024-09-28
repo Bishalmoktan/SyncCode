@@ -14,7 +14,7 @@ interface UserSocketMap {
 
 app.get("/check-health", (req, res) => {
   res.status(200).json({
-    message: "Server is running fine"
+    message: "All good!"
   })
 })
 
